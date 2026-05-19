@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STIA Mobile Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { margin: 0; padding: 10px; background: #222; display: flex; flex-direction: column; align-items: center; }
+        
+        /* התאמת גודל התעודה למסך הטלפון */
+        #diploma-canvas {
+            position: relative;
+            width: 100vw; height: 100vw; /* ריבוע שמתאים לרוחב המסך */
+            background-image: url('background.png');
+            background-size: contain; background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .item { position: absolute; color: #b8860b; font-weight: bold; padding: 5px; }
+        #passport-photo { width: 20%; height: 20%; border: 2px solid #b8860b; background-size: cover; }
+        
+        .controls { margin-top: 15px; display: flex; gap: 10px; }
+    </style>
+</head>
+<body>
+
+<div id="diploma-canvas">
+    <div id="passport-photo" class="item" style="top: 20%; left: 70%;"></div>
+    <div class="item" style="top: 40%; width: 100%; text-align: center; font-size: 5vw;" contenteditable="true">שם הנמען</div>
+    <div class="item" style="top: 50%; width: 100%; text-align: center; font-size: 3vw;" contenteditable="true">פירוט ההסמכה</div>
+</div>
+
+<div class="controls">
+    <input type="file" id="imgLoader">
+    <button onclick="downloadAsImage()">הורד תעודה</button>
+</div>
+
+<script>
+    // העלאת תמונה למובייל
+    document.getElementById('imgLoader').onchange = function(e) {
+        let reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('passport-photo').style.backgroundImage = "url("+event.target.result+")";
+        }
+        reader.readAsDataURL(e.target.files[0]);
+    }
+
+    // פונקציית הורדה למובייל
+    function downloadAsImage() {
+        html2canvas(document.querySelector("#diploma-canvas"), {scale: 2}).then(canvas => {
+            let link = document.createElement('a');
+            link.download = 'certificate.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    }
+</script>
+</body>
+</html>
