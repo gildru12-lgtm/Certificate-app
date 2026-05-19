@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { background: #333; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        
+        #workspace {
+            width: 800px; height: 800px;
+            background-image: url('background.png'); /* וודא שהתמונה בשם הזה באותה תיקייה */
+            background-size: cover;
+            position: relative;
+            border: 2px solid #000;
+            overflow: hidden;
+        }
+
+        .drag { position: absolute; cursor: move; color: #b8860b; font-family: 'serif'; font-size: 32px; font-weight: bold; padding: 5px; }
+        #passport-photo { width: 120px; height: 150px; border: 2px solid #b8860b; background: #ddd; background-size: cover; }
+        
+        .controls { margin-top: 20px; color: white; }
+    </style>
+</head>
+<body>
+
+<div id="workspace">
+    <div id="passport-photo" class="drag" style="top:350px; left:100px;"></div>
+    <div class="drag" style="top:400px; left:300px;" contenteditable="true">הכנס שם כאן</div>
+    <div class="drag" style="top:500px; left:300px;" contenteditable="true">כאן יבוא פירוט הדרישות</div>
+</div>
+
+<div class="controls">
+    <input type="file" id="upload" accept="image/*">
+    <button onclick="window.print()">הורד/הדפס תעודה</button>
+</div>
+
+<script>
+    // העלאת תמונת פספורט
+    document.getElementById('upload').onchange = function(e) {
+        let reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('passport-photo').style.backgroundImage = "url("+event.target.result+")";
+        }
+        reader.readAsDataURL(e.target.files[0]);
+    }
+
+    // לוגיקת גרירה
+    let activeEl = null;
+    document.querySelectorAll('.drag').forEach(el => {
+        el.onmousedown = (e) => {
+            activeEl = el;
+            let shiftX = e.clientX - el.getBoundingClientRect().left;
+            let shiftY = e.clientY - el.getBoundingClientRect().top;
+            
+            document.onmousemove = (e) => {
+                activeEl.style.left = (e.clientX - shiftX) + 'px';
+                activeEl.style.top = (e.clientY - shiftY) + 'px';
+            };
+            document.onmouseup = () => { document.onmousemove = null; };
+        }
+    });
+</script>
+</body>
+</html>
